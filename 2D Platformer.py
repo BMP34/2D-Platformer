@@ -24,10 +24,11 @@ left = pygame.Rect(0,0,1,HEIGHT)
 right = pygame.Rect(600,0,1,HEIGHT)
 
 floor = pygame.Rect(0, (HEIGHT)-(PADH), PADW, PADH)
-#wall = pygame.Rect(30, 
+wall = pygame.Rect(90, 270, 30, 50)
 
+friction = 0.95
 ball = pygame.Rect(5, (HEIGHT)-(PADH), 15, 15)
-ball_dx, ball_dy = 5, -5
+ball_dx, ball_dy = 0, 0
 
 jump = False
 
@@ -37,6 +38,19 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    # Controls
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_a]:
+        ball_dx = -5
+    if keys[pygame.K_d]:
+        ball_dx = 5
+    if keys[pygame.K_w] and jump == False:
+        ball_dy = -20
+        jump = True
+
+    ball.y += ball_dy
+    ball.x += ball_dx
+    
     if ball.left <= 0:
         ball.left = 0
     elif ball.right >= WIDTH:
@@ -45,27 +59,20 @@ while running:
         ball.bottom = (HEIGHT)-(PADH)
         ball_dy = 0
         jump = False
+    if ball.colliderect (wall):
+        if ball_dx > 0:
+            ball.right = wall.left
+        elif ball_dx <= 0:
+            ball.left = wall.right
         
-    # Controls
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
-        ball.x -= ball_dx
-    if keys[pygame.K_d]:
-        ball.x += ball_dx
-    if keys[pygame.K_LEFT]:
-        ball.x -= ball_dx
-    if keys[pygame.K_RIGHT]:
-        ball.x += ball_dx
-    if keys[pygame.K_w] and jump == False:
-        ball_dy = -20
-        jump = True
 
     screen.fill(LIGHT_BLUE)
     pygame.draw.ellipse(screen, ORANGE, ball)
     pygame.draw.rect(screen, GREEN, floor)
+    pygame.draw.rect(screen, WHITE, wall)
     pygame.display.flip()
     clock.tick(60)
-    ball.y += ball_dy
     ball_dy += 2
+    ball_dx *= friction
 
 pygame.quit()
