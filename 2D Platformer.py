@@ -1,5 +1,12 @@
 import pygame
 
+class Platform(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.image = pygame.Surface((width, height))
+        self.image.fil((0, 255, 0))
+        self.rect = self.image.get_rect(topleft=(x, y))
+
 pygame.init()
 
 # Measurements
@@ -28,6 +35,22 @@ friction = 0.7
 gravity = 2
 
 jump = False
+
+
+platforms = pygame.sprite.Group()
+platforms.add(Platform(0, HEIGHT, WIDTH, 50))
+platforms.add(Platform(200, 4000, 100, 20))
+platforms.add(Platform(400, 300, 100, 20))
+
+
+hits= pygame.sprite.spritecollide(player, platforms, False)
+
+if hits:
+    for wall in hits:
+        if ball.vel_y > 0:
+            ball.rect.bottom = wall.rect.top
+            ball.vel_y = 0
+            ball.on_ground = True
 
 # Game loop
 running = True
