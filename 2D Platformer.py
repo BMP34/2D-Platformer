@@ -4,7 +4,7 @@ class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
         self.image = pygame.Surface((width, height))
-        self.image.fil((0, 255, 0))
+        self.image.fill((0, 255, 0))
         self.rect = self.image.get_rect(topleft=(x, y))
 
 pygame.init()
@@ -43,14 +43,6 @@ platforms.add(Platform(200, 4000, 100, 20))
 platforms.add(Platform(400, 300, 100, 20))
 
 
-hits= pygame.sprite.spritecollide(player, platforms, False)
-
-if hits:
-    for wall in hits:
-        if ball.vel_y > 0:
-            ball.rect.bottom = wall.rect.top
-            ball.vel_y = 0
-            ball.on_ground = True
 
 # Game loop
 running = True
@@ -79,22 +71,28 @@ while running:
 
     # Horizontal movement
     ball.x += ball_dx
-    if ball.colliderect(wall):
-        if ball_dx > 0:
-            ball.right = wall.left
-        elif ball_dx < 0:
-            ball.left = wall.right
+    hits= pygame.sprite.spritecollide(ball, platforms, False)
+
+    if hits:
+        for wall in hits:
+            if ball_dx > 0:
+                ball.right = wall.left
+            elif ball_dx < 0:
+                ball.left = wall.right
 
     # Vertical movement
     ball.y += ball_dy
-    if ball.colliderect(wall):
-        if ball_dy > 0:  # falling
-            ball.bottom = wall.top
-            ball_dy = 0
-            jump = False
-        elif ball_dy < 0:  # jumping
-            ball.top = wall.bottom
-            ball_dy = 0
+    hits= pygame.sprite.spritecollide(ball, platforms, False)
+
+    if hits:
+        for wall in hits:
+            if ball_dy > 0:  # falling
+                ball.bottom = wall.top
+                ball_dy = 0
+                jump = False
+            elif ball_dy < 0:  # jumping
+                ball.top = wall.bottom
+                ball_dy = 0
 
     # Floor collision
     if ball.colliderect(floor):
